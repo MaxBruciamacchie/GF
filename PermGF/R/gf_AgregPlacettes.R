@@ -41,6 +41,7 @@ gf_AgregMoySdEr <- function(df, Regroup="Strate", var.sup=NULL, debut=4, ncol=5)
   TabSum <- cbind(TabSum$Nom,TabSum[,1:(debut-1)],Moy,CV,Er,TabSum$Nbre)
   names(TabSum)[1] <- "Nom"
   names(TabSum)[(debut+1):(debut+1+3*ncol)] <- c( paste("Moy",xnam,sep="_"),paste("CV",xnam,sep="_"),paste("Er",xnam,sep="_"),"NbrePlacettes")
+  names(TabSum)[names(TabSum)=="Regroup"] <- Regroup
   TabSum
 }
 
