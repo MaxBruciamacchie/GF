@@ -12,12 +12,9 @@
 #' @import tcltk
 #' @import openxlsx
 #' @export
-gf_Xls2Rdata <- function(rep) {
-  old <- getwd()
+gf_Xls2Rdata <- function(file) {
   setwd(rep)
-  file <- file.choose()
-  setwd(dirname(file))
-
+  repdatasav <- dirname(dirname(dirname(file)))
   # ---------------- Import
   Forets            <- read.xlsx(file, sheet="Foret")
   Cycles            <- read.xlsx(file, sheet="Cycle")
@@ -54,11 +51,15 @@ gf_Xls2Rdata <- function(rep) {
   Reges <- cbind(Reges[,1:5],t1,Reges$Observation)
   names(Reges)[12] <- "Observation"
   # --------------- Sauvegarde
-  setwd(old)
+  dir.create(paste0(repdatasav,"/Tables"), showWarnings = F)
   dir.create("Tables", showWarnings = F)
   rm(Tiges, file)
   save(Forets,Echantillonnages,Cycles,Placettes,Coords,PCQM,Cercles,Reges,
-                BMSLineaires,BMSCercles,Tarifs,Tiers,Hauts,AccD,Essences,EssReg,EssInd,
-                CodeEcolos,Quals,Prix,IdArbres,ValArbres,Reperes,
-                file = "Tables/gfDonneesBrutes.Rdata")
+       BMSLineaires,BMSCercles,Tarifs,Tiers,Hauts,AccD,Essences,EssReg,EssInd,
+       CodeEcolos,Quals,Prix,IdArbres,ValArbres,Reperes,
+       file = "Tables/gfDonneesBrutes.Rdata")
+  save(Forets,Echantillonnages,Cycles,Placettes,Coords,PCQM,Cercles,Reges,
+       BMSLineaires,BMSCercles,Tarifs,Tiers,Hauts,AccD,Essences,EssReg,EssInd,
+       CodeEcolos,Quals,Prix,IdArbres,ValArbres,Reperes,
+       file = paste0(repdatasav,"/","Tables/gfDonneesBrutes.Rdata"))
 }
