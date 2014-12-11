@@ -17,12 +17,24 @@ gf_Tables2Xls <- function() {
   dir.create("Out/Resultats", showWarnings = F)
   Tabs <- list(gfDendroForet,gfDendroGroupe,gfDendroGroupe1,gfDendroGroupe2,gfDendroStation,
                gfDendroTypo,gfDendroStrate,gfEcoForet,gfEcoGroupe,gfEcoGroupe1,gfEcoGroupe2,
-               gfEcoStation,gfEcoTypo,gfEcoStrate,gfEssMoy,gfEssRegMoy,gfTaillisEss,gfTaillisEssReg,
-               gfRegeEss,gfHistClasseEssReg,gfHistClasse,gfHistClasseABC,gfHistClasseD,gfCatMoy)
+               gfEcoStation,gfEcoTypo,gfEcoStrate,
+               gfEcoEssDen,gfEcoEss,gfDendroEssDen,gfDendroEss,
+               gfRegeEssReg,gfRegeEss,gfRege,
+               gfTaillisEssReg,gfTaillisEss,gfTaillis,
+               gfEcoEssRegDen,gfEcoEssReg,
+               gfDendroEssRegDen,gfDendroEssReg,
+               gfDendroCatQual2Den,gfDendroCatQual1,gfDendroCatEssReg,gfDendroCat,
+               gfEcoCatQual2Den,gfEcoCatQual1,gfEcoCatEssReg,gfEcoCat)
   Noms <- c("gfDendroForet","gfDendroGroupe","gfDendroGroupe1","gfDendroGroupe2","gfDendroStation",
-               "gfDendroTypo","gfDendroStrate","gfEcoForet","gfEcoGroupe","gfEcoGroupe1","gfEcoGroupe2",
-               "gfEcoStation","gfEcoTypo","gfEcoStrate","gfEssMoy","gfEssRegMoy","gfTaillisEss","gfTaillisEssReg",
-               "gfRegeEss","gfHistClasseEssReg","gfHistClasse","gfHistClasseABC","gfHistClasseD","gfCatMoy")
+            "gfDendroTypo","gfDendroStrate","gfEcoForet","gfEcoGroupe","gfEcoGroupe1","gfEcoGroupe2",
+            "gfEcoStation","gfEcoTypo","gfEcoStrate",
+            "gfEcoEssDen","gfEcoEss","gfDendroEssDen","gfDendroEss",
+            "gfRegeEssReg","gfRegeEss","gfRege",
+            "gfTaillisEssReg","gfTaillisEss","gfTaillis",
+            "gfEcoEssRegDen","gfEcoEssReg",
+            "gfDendroEssRegDen","gfDendroEssReg",
+            "gfDendroCatQual2Den","gfDendroCatQual1","gfDendroCatEssReg","gfDendroCat",
+            "gfEcoCatQual2Den","gfEcoCatQual1","gfEcoCatEssReg","gfEcoCat")
   wb <- createWorkbook()
   for (i in 1:length(Tabs)) {
     addWorksheet(wb, Noms[i])

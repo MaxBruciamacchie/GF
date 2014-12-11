@@ -17,94 +17,94 @@
 gf_AgregArbres <- function() {
   ################### Creation des tables par placettes #####################
   tab <- subset(arbres, select = c("NumForet","NumPlac","NumArbre","Cycle","Strate","Essence","Type",
-                                   "Reg1","Reg2","Classe","Cat","Poids","Gha","Vha","VcHa","VpHa","Gain","AcctV"))
+                                   "Reg1","Reg2","Classe","Cat","Poids","Gha","Vha","VhaIFN","VcHa","VpHa","Gain","AcctV"))
   names(tab)[which(names(tab)=="Poids")] <-"Nha"
   den <- tab[which(tab$Cat!="PER"),]
 
   # --------- Tableaux par placettes -------
   # --- Totaux
-  gfPla <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle,
+  gfPla <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle,
                       data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaDen <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle,
+  gfPlaDen <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle,
                          data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par essence
-  gfPlaEss <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle + Essence,
+  gfPlaEss <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle + Essence,
                          data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaEssDen <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle + Essence,
+  gfPlaEssDen <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle + Essence,
                             data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par essence regroupee
   tab <- merge(tab, EssReg, by=c("NumForet","Essence"), all.x=T)
   den <- merge(den, EssReg, by=c("NumForet","Essence"), all.x=T)
-  gfPlaEssReg <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle + EssReg,
+  gfPlaEssReg <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle + EssReg,
                             data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaEssRegDen <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle + EssReg,
+  gfPlaEssRegDen <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle + EssReg,
                                data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Cat
-  gfPlaCat <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle + Cat,
+  gfPlaCat <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle + Cat,
                          data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaCatDen <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Strate + Cycle + Cat,
+  gfPlaCatDen <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~ NumForet + NumPlac + Cycle + Cat,
                             data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Cat et EssReg
-  gfPlaCatEssReg <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                 NumForet + NumPlac + Strate + Cycle + Cat + EssReg,
+  gfPlaCatEssReg <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                 NumForet + NumPlac + Cycle + Cat + EssReg,
                                data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaCatEssRegDen <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                    NumForet + NumPlac + Strate + Cycle + Cat + EssReg,
+  gfPlaCatEssRegDen <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                    NumForet + NumPlac + Cycle + Cat + EssReg,
                                   data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par EssReg et Qual Reg1
-  gfPlaEssRegQual <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                  NumForet + NumPlac + Strate + Cycle + EssReg + Reg1,
+  gfPlaEssRegQual <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                  NumForet + NumPlac + Cycle + EssReg + Reg1,
                                 data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaEssRegQualDen <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                     NumForet + NumPlac + Strate + Cycle + EssReg + Reg1,
+  gfPlaEssRegQualDen <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                     NumForet + NumPlac + Cycle + EssReg + Reg1,
                                    data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Classe et Qual Reg1
-  gfPlaClasseQual1 <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                   NumForet + NumPlac + Strate + Cycle + Classe + Reg1,
+  gfPlaClasseQual1 <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                   NumForet + NumPlac + Cycle + Classe + Reg1,
                                  data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaClasseQual1Den <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                      NumForet + NumPlac + Strate + Cycle + Classe + Reg1,
+  gfPlaClasseQual1Den <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                      NumForet + NumPlac + Cycle + Classe + Reg1,
                                     data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Classe et Qual Reg2
-  gfPlaClasseQual2 <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                   NumForet + NumPlac + Strate + Cycle + Classe + Reg2,
+  gfPlaClasseQual2 <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                   NumForet + NumPlac + Cycle + Classe + Reg2,
                                  data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaClasseQual2Den <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                      NumForet + NumPlac + Strate + Cycle + Classe + Reg2,
+  gfPlaClasseQual2Den <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                      NumForet + NumPlac + Cycle + Classe + Reg2,
                                     data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Classe et EssReg
-  gfPlaClasseEssReg <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
+  gfPlaClasseEssReg <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
                                     NumForet + NumPlac + Cycle + Classe + EssReg,
                                   data=tab, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Cat et Qual Reg1
-  gfPlaCatQual1 <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                NumForet + NumPlac + Strate + Cycle + Cat + Reg1,
+  gfPlaCatQual1 <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                NumForet + NumPlac + Cycle + Cat + Reg1,
                               data=tab, FUN= sum, na.rm=T, keep.names=T)
   # --- Par Cat et Qual Reg2
-  gfPlaCatQual2 <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                NumForet + NumPlac + Strate + Cycle + Cat + Reg2,
+  gfPlaCatQual2 <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                NumForet + NumPlac + Cycle + Cat + Reg2,
                               data=tab, FUN= sum, na.rm=T, keep.names=T)
-  gfPlaCatQual2Den <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                   NumForet + NumPlac + Strate + Cycle + Cat + Reg2,
+  gfPlaCatQual2Den <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                   NumForet + NumPlac + Cycle + Cat + Reg2,
                                  data=den, FUN= sum, na.rm=T, keep.names=T)
   # --- Par EssReg et Qual Reg1
-  gfPlaEssRegQual1 <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                   NumForet + NumPlac + Strate + Cycle + EssReg + Reg1,
+  gfPlaEssRegQual1 <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                   NumForet + NumPlac + Cycle + EssReg + Reg1,
                                  data=tab, FUN= sum, na.rm=T, keep.names=T)
   # --- Par EssReg et Qual Reg2
-  gfPlaEssRegQual2 <- summaryBy(Nha + Gha + Vha + VcHa + VpHa + Gain + AcctV ~
-                                   NumForet + NumPlac + Strate + Cycle + EssReg + Reg2,
+  gfPlaEssRegQual2 <- summaryBy(Nha + Gha + Vha + VhaIFN + VcHa + VpHa + Gain + AcctV ~
+                                   NumForet + NumPlac + Cycle + EssReg + Reg2,
                                  data=tab, FUN= sum, na.rm=T, keep.names=T)
 
   # --------- Tableaux des perches par placettes -------
   Perches <- subset(arbres, Cat=="PER")
   names(Perches)[which(names(Perches)=="Poids")] <- "Nha"
   Perches <- merge(Perches, EssReg, by=c("NumForet","Essence"), all.x=T)
-  gfPerchesPla <- summaryBy(Nha + Gha + Vha ~ NumForet + Cycle + NumPlac,
+  gfPerchesPla <- summaryBy(Nha + Gha + Vha + VhaIFN ~ NumForet + Cycle + NumPlac,
                           data=Perches, FUN= sum, na.rm=T, keep.names=T)
-  gfPerchesPlaEss <- summaryBy(Nha + Gha + Vha ~ NumForet + Cycle + NumPlac + EssReg,
+  gfPerchesPlaEss <- summaryBy(Nha + Gha + Vha + VhaIFN ~ NumForet + Cycle + NumPlac + EssReg,
                              data=Perches, FUN= sum, na.rm=T, keep.names=T)
-  gfPerchesPlaQual <- summaryBy(Nha + Gha + Vha ~ NumForet + Cycle + NumPlac + Reg1,
+  gfPerchesPlaQual <- summaryBy(Nha + Gha + Vha + VhaIFN ~ NumForet + Cycle + NumPlac + Reg1,
                               data=Perches, FUN= sum, na.rm=T, keep.names=T)
 
   # --------- BMS echantillonnage lineaire -------
@@ -113,7 +113,7 @@ gf_AgregArbres <- function() {
     temp$Classe <- floor(temp$Diam/5+0.5)*5
     temp$StadeE <- floor(temp$Stade/10)
     temp$StadeD <- temp$Stade - temp$StadeE*10
-    BMSolLin <- summaryBy(Vha ~ NumForet + NumPlac + Cycle + NumPlac + Strate + Classe + StadeE + StadeD,
+    BMSolLin <- summaryBy(Vha ~ NumForet + NumPlac + Cycle + NumPlac + Classe + StadeE + StadeD,
     											 data=temp, FUN= sum, na.rm=T, keep.names=T)
     BMSolLin <- merge(BMSolLin, Placettes[,c(1:9,12)], by=c("NumForet","NumPlac"))
   } else {
@@ -233,5 +233,5 @@ if (dim(Taillis)[1] >0) {
 # 		 TabCatEssRegMoy,TabEssMoy,TabClasseEssRegMoy,TabEssRegMoy,
 # 		 Reges, RegePlaEss, RegeEss,
 
-     file="Tables/GFTablesElaboreesPlac.RData")
+     file="Tables/gfTablesElaboreesPlac.RData")
 }

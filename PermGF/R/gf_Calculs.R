@@ -39,21 +39,22 @@ gf_Calculs <- function(TauxR=0.03) {
   arbres <- arbres[order(arbres$NumForet,arbres$Cycle,arbres$NumPlac,arbres$Azimut),]
 
   ########### Calcul du poids ############
+  print("Calcul du poids")
   arbres$Poids <- NA
   # arbres$Poids <- 0
   # cas des perches sans mesure de distance
   pos <- which(arbres$Cat=="PER" & is.na(arbres$Dist))
   if (length(pos) > 0) arbres[pos,"Poids"] <- 10000/pi/arbres$Rayon1[pos]^2
-#   # cas des perches avec mesure de distance
-#   pos <- which(arbres$Cat=="PER" & !is.na(arbres$Dist) & arbres$Dist > arbres$Rayon1 * arbres$CoeffPente)
-#   if (length(pos) > 0) arbres[pos,"Poids"] <- 0
+  #   # cas des perches avec mesure de distance
+  #   pos <- which(arbres$Cat=="PER" & !is.na(arbres$Dist) & arbres$Dist > arbres$Rayon1 * arbres$CoeffPente)
+  #   if (length(pos) > 0) arbres[pos,"Poids"] <- 0
 
   # ------------ Cercles uniques
   pos <- which(is.na(arbres$Poids) & is.na(arbres$DiamLim2) &
                  arbres$Diam >= arbres$DiamLim1 &
                  arbres$Dist <= arbres$Rayon1 * arbres$CoeffPente)
   if (length(pos) > 0) arbres[pos,"Poids"] <- 10000/pi/arbres$Rayon1[pos]^2
-#   # ------------ Cercles concentriques
+  #   # ------------ Cercles concentriques
   pos <- which(is.na(arbres$Poids) & !is.na(arbres$DiamLim2) &
                  arbres$Diam >= arbres$DiamLim1 & arbres$Diam <= arbres$DiamLim2 &
                  arbres$Dist <= arbres$Rayon1 * arbres$CoeffPente)
@@ -69,8 +70,8 @@ gf_Calculs <- function(TauxR=0.03) {
   # ------------ Angle fixe
   pos <- which(arbres$Diam < arbres$DiamLim)
   if (length(pos) > 0) arbres[pos,"Coeff"] <- NA
-#   pos <- which(is.na(arbres$Poids) & arbres$Diam < arbres$DiamLim & arbres$Dist <= arbres$Rayon1 * arbres$CoeffPente)
-#   if (length(pos) > 0) arbres[pos,"Poids"] <- 10000/pi/arbres$Rayon1[pos]^2
+  #   pos <- which(is.na(arbres$Poids) & arbres$Diam < arbres$DiamLim & arbres$Dist <= arbres$Rayon1 * arbres$CoeffPente)
+  #   if (length(pos) > 0) arbres[pos,"Poids"] <- 10000/pi/arbres$Rayon1[pos]^2
   pos <- which(!is.na(arbres$Coeff) & arbres$Diam1 >= arbres$Dist * arbres$Coeff * 100)
   if (length(pos) > 0) arbres[pos,"Poids"] <- 10^8*arbres$Coeff[pos]^2/pi/arbres$Diam[pos]^2
   pos <- which(!is.na(arbres$Coeff) & arbres$Diam1 < arbres$Dist * arbres$Coeff * 100)
@@ -78,25 +79,48 @@ gf_Calculs <- function(TauxR=0.03) {
   rm(pos)
   ########### Donnees /ha ############
   arbres$Gha <- pi*arbres$Diam^2/40000 * arbres$Poids
+  # ------ Calcul du volume Gestionnaire
+  print("Calcul du volume gestionnaire")
   arbres$Vha <- NA
   pos <- which(arbres$TypeTarif=="SchR")
   if (length(pos) > 0) {
     arbres$Vha[pos] <-  5/70000*(8+arbres$NumTarif[pos])*(arbres$Diam[pos]-5)*
-                        (arbres$Diam[pos]-10)*arbres$Poids[pos]}
+      (arbres$Diam[pos]-10)*arbres$Poids[pos]}
   pos <- which(arbres$TypeTarif=="SchI")
   if (length(pos) > 0) {
     arbres$Vha[pos] <-  5/80000*(8+arbres$NumTarif[pos])*(arbres$Diam[pos]-2.5)*
-                        (arbres$Diam[pos]-7.5)*arbres$Poids[pos]}
+      (arbres$Diam[pos]-7.5)*arbres$Poids[pos]}
   pos <- which(arbres$TypeTarif=="SchL")
   if (length(pos) > 0) {
     arbres$Vha[pos] <-  5/90000*(8+arbres$NumTarif[pos])*(arbres$Diam[pos]-5)*
-                        arbres$Diam[pos]*arbres$Poids[pos]}
+      arbres$Diam[pos]*arbres$Poids[pos]}
   pos <- which(arbres$TypeTarif=="SchTL")
   if (length(pos) > 0) {
     arbres$Vha[pos] <-  5/101250*(8+arbres$NumTarif[pos])*arbres$Diam[pos]^2*arbres$Poids[pos]}
 
   arbres$Vha[which(arbres$Vha<0)] <- 0
+  # ------ Calcul du volume IFN
+  print("Calcul du volume géométrique bois fort tige")
+  arbres$VhaIFN <- NA
+  pos <- which(arbres$TypeTarifIFN=="SchR")
+  if (length(pos) > 0) {
+    arbres$VhaIFN[pos] <-  5/70000*(8+arbres$NumTarifIFN[pos])*(arbres$Diam[pos]-5)*
+      (arbres$Diam[pos]-10)*arbres$Poids[pos]}
+  pos <- which(arbres$TypeTarifIFN=="SchI")
+  if (length(pos) > 0) {
+    arbres$VhaIFN[pos] <-  5/80000*(8+arbres$NumTarifIFN[pos])*(arbres$Diam[pos]-2.5)*
+      (arbres$Diam[pos]-7.5)*arbres$Poids[pos]}
+  pos <- which(arbres$TypeTarifIFN=="SchL")
+  if (length(pos) > 0) {
+    arbres$VhaIFN[pos] <-  5/90000*(8+arbres$NumTarifIFN[pos])*(arbres$Diam[pos]-5)*
+      arbres$Diam[pos]*arbres$Poids[pos]}
+  pos <- which(arbres$TypeTarifIFN=="SchTL")
+  if (length(pos) > 0) {
+    arbres$VhaIFN[pos] <-  5/101250*(8+arbres$NumTarifIFN[pos])*arbres$Diam[pos]^2*arbres$Poids[pos]}
+
+  arbres$VhaIFN[which(arbres$VhaIFN<0)] <- 0
   # ------ Valeur consommation
+  print("Calcul de la valeur de consommation")
   arbres$VcHa <- arbres$Vha*arbres$PU
   # ------ Volume de la classe supérieure
   arbres$DiamSup <- arbres$Diam + 5
@@ -105,15 +129,15 @@ gf_Calculs <- function(TauxR=0.03) {
   pos <- which(arbres$TypeTarif=="SchR")
   if (length(pos) > 0) {
     arbres$VhaSup[pos] <- 5/70000*(8+arbres$NumTarif[pos])*(arbres$DiamSup[pos]-5)*
-                        (arbres$DiamSup[pos]-10)*arbres$Poids[pos]}
+      (arbres$DiamSup[pos]-10)*arbres$Poids[pos]}
   pos <- which(arbres$TypeTarif=="SchI")
   if (length(pos) > 0) {
     arbres$VhaSup[pos] <- 5/80000*(8+arbres$NumTarif[pos])*(arbres$DiamSup[pos]-2.5)*
-                        (arbres$DiamSup[pos]-7.5)*arbres$Poids[pos]}
+      (arbres$DiamSup[pos]-7.5)*arbres$Poids[pos]}
   pos <- which(arbres$TypeTarif=="SchL")
   if (length(pos) > 0) {
     arbres$VhaSup[pos] <- 5/90000*(8+arbres$NumTarif[pos])*(arbres$DiamSup[pos]-5)*
-                        arbres$DiamSup[pos]*arbres$Poids[pos]}
+      arbres$DiamSup[pos]*arbres$Poids[pos]}
   pos <- which(arbres$TypeTarif=="SchTL")
   if (length(pos) > 0) {
     arbres$VhaSup[pos] <- 5/101250*(8+arbres$NumTarif[pos])*arbres$DiamSup[pos]^2*arbres$Poids[pos]}
@@ -124,6 +148,7 @@ gf_Calculs <- function(TauxR=0.03) {
   arbres$TauxV[pos] <- log(arbres$VhaSup[pos]/arbres$Vha[pos])/5
   rm(pos)
   # ------ Valeur potentielle
+  print("Calcul de la valeur potentielle")
   PrixSup <- Prix
   names(PrixSup)[4] <- "PUSup"
   arbres <- merge(arbres, PrixSup, by.x = c("Essence", "ClasseSup", "Reg1"),
@@ -139,41 +164,43 @@ gf_Calculs <- function(TauxR=0.03) {
   arbres$VpHa    <- arbres$Gain/TauxR
 
   ########### Regeneration ################
+  print("Calcul des surfaces régénérées")
   if (dim(Reges)[1] > 0) {
     Reges <- merge(Reges, Placettes[,1:9,12], by=c("NumForet","NumPlac"), all.x=T, sort=F)
-  Reges <- merge(Reges, Echantillonnages[,c("NumForet","Cycle","Strate","NbPlac","NbSousPlac","RayonSousPlac")],
-                 by=c("NumForet","Cycle","Strate"), all.x = T, sort=F)
-  Reges$EssValor <- 0
-  for (i in 1:dim(Forets)[1]) {
-    EssEnTour <- subset(EssInd, NumForet==Forets$NumForet[i], select="Essence")
-    pos <- which(Reges$NumForet==Forets$NumForet[i] & is.element(Reges$Essence, t(EssEnTour)))
-    Reges$EssValor[pos] <- 1
-  }
+    Reges <- merge(Reges, Echantillonnages[,c("NumForet","Cycle","Strate","NbPlac","NbSousPlac","RayonSousPlac")],
+                   by=c("NumForet","Cycle","Strate"), all.x = T, sort=F)
+    Reges$EssValor <- 0
+    for (i in 1:dim(Forets)[1]) {
+      EssEnTour <- subset(EssInd, NumForet==Forets$NumForet[i], select="Essence")
+      pos <- which(Reges$NumForet==Forets$NumForet[i] & is.element(Reges$Essence, t(EssEnTour)))
+      Reges$EssValor[pos] <- 1
+    }
 
-  Reges$Surf <- ifelse(Reges$Class1 + Reges$Class2+ Reges$Class3 >=5, 1, 0)
-  Reges$Surf <- Reges$Surf/Reges$NbPlac
-  SurfRege <- summaryBy(Surf + Surf*EssValor ~ NumForet+ Cycle + Ss.Plac+ Essence ,
-                        data=Reges, FUN= sum, na.rm=T, keep.names=T)
+    Reges$Surf <- ifelse(Reges$Class1 + Reges$Class2+ Reges$Class3 >=5, 1, 0)
+    Reges$Surf <- Reges$Surf/Reges$NbPlac
+    SurfRege <- summaryBy(Surf + Surf*EssValor ~ NumForet+ Cycle + Ss.Plac+ Essence ,
+                          data=Reges, FUN= sum, na.rm=T, keep.names=T)
 
-  # SurfRege1 <- data.frame(Pourc= c(sum(Reges$Surf)/Echantillonnages[1,12]/Echantillonnages[1,13],
-  #   															sum(Reges$Surf*Reges$EssValor)/Echantillonnages[1,12]/Echantillonnages[1,13]))
-  # ----- Donnees hectare
-  Reges$Classe1 <- Reges$Class1* 10000/pi/Reges$RayonSousPlac^2
-  Reges$Classe2 <- Reges$Class2* 10000/pi/Reges$RayonSousPlac^2
-  Reges$Classe3 <- Reges$Class3* 10000/pi/Reges$RayonSousPlac^2
-  Reges <- subset(Reges, select=c("NumForet","Strate","Cycle","NumPlac","Ss-Plac",
-                                  "Parcelle","Groupe","Typologie","Groupe1","Station",
-                                  "Essence","EssValor","Recouv","Classe1","Classe2","Classe3"))
+    # SurfRege1 <- data.frame(Pourc= c(sum(Reges$Surf)/Echantillonnages[1,12]/Echantillonnages[1,13],
+    #   															sum(Reges$Surf*Reges$EssValor)/Echantillonnages[1,12]/Echantillonnages[1,13]))
+    # ----- Donnees hectare
+    Reges$Classe1 <- Reges$Class1* 10000/pi/Reges$RayonSousPlac^2
+    Reges$Classe2 <- Reges$Class2* 10000/pi/Reges$RayonSousPlac^2
+    Reges$Classe3 <- Reges$Class3* 10000/pi/Reges$RayonSousPlac^2
+    Reges <- subset(Reges, select=c("NumForet","Strate","Cycle","NumPlac","Ss-Plac",
+                                    "Parcelle","Groupe","Typologie","Groupe1","Station",
+                                    "Essence","EssValor","Recouv","Classe1","Classe2","Classe3"))
   } else {
     Reges <- data.frame()
   }
 
 
   ########### taillis ################
+  print("Traitement du taillis")
   # ---- PCQM
   if (dim(PCQM)[1] > 0) {
     Taillis <- subset(PCQM, Population=="Taillis",
-                select=c("NumForet","NumPlac","Cycle","Quart","Essence","Azimut","Distance","Diam"))
+                      select=c("NumForet","NumPlac","Cycle","Quart","Essence","Azimut","Distance","Diam"))
     if (dim(Taillis)[1] >0) {
       Taillis <- merge(Taillis, Placettes[,c(1:4)], by=c("NumForet","NumPlac"), all.x=T, sort=F)
       Corr <- data.frame(Coeff=table(Taillis$NumPlac))
@@ -192,10 +219,10 @@ gf_Calculs <- function(TauxR=0.03) {
       Taillis$Vha <- Taillis$Gha * 7
       Taillis <- subset(Taillis, select=c("NumForet","NumPlac","Cycle","Essence","Diam","Poids","Gha","Vha"))
     } else {
-    Taillis <- data.frame()
+      Taillis <- data.frame()
     }
   }
-    # ---- Cercles
+  # ---- Cercles
   if (dim(Cercles)[1] > 0) {
     Cercles <- merge(Cercles, Placettes[,c(1:9,11:12)], by=c("NumForet","NumPlac"), all.x=T, sort=F)
     Taillis <- merge(Cercles, Echantillonnages[,c("NumForet","Cycle","Strate","Taillis")],
@@ -207,6 +234,7 @@ gf_Calculs <- function(TauxR=0.03) {
   }
 
   ########### Bois mort au sol ###########
+  print("Traitement des données de bois mort")
   # lineaire
   if (dim(BMSLineaires)[1] > 0) {
     LongLig <- Echantillonnages$Linéaire[1]
@@ -252,7 +280,7 @@ gf_Calculs <- function(TauxR=0.03) {
       Corr$Vides <- 4-Corr$Nbre
       Corr <- merge(Corr, Coeffts, by="Vides", all.x=T, sort=F)
       Tab <- summaryBy(Distance^2 ~ NumForet + NumPlac + Cycle,
-  							 data=BMP, FUN= sum, na.rm=T, keep.names=T)
+                       data=BMP, FUN= sum, na.rm=T, keep.names=T)
       names(Tab)[4] <- "Poids"
       Tab$Poids <- 10000*3/pi/Tab$Poids
       BMP <- merge(BMP, Tab, by=c("NumForet","NumPlac","Cycle"), all.x=T, sort=F)
@@ -267,40 +295,41 @@ gf_Calculs <- function(TauxR=0.03) {
       BMP <- subset(BMP, select=c("NumForet","NumPlac","Cycle","Essence","Diam","Stade","Gha","Vha"))
       rm(Tab,pos,Corr)
     } else {
-        BMP <- data.frame()
-      }
+      BMP <- data.frame()
+    }
   } else {
-        BMP <- data.frame()
-      }
+    BMP <- data.frame()
+  }
 
   ####### Note ecologique ######
+  print("Traitement des données écologiques")
   Codes <- subset(arbres, NoteEcolo != "", c(NumForet,Strate,Cycle,NumPlac,NumArbre,Essence,Diam,NoteEcolo,Poids))
   # ---- Liste des niveaux
   if (dim(Codes)[1] > 0) {
     Niveaux <- c("g1","g2","g3","h1","h2","h3","f1","f2","f3","a1","a2","a3","p1","p2","p3","i1","i2","i3","c1",
-  					  "c2","c3","e1","e2","e3","b1","b2","b3","l1","l2","l3","r1","r2","r3","k","ts","tc","tn","tx","d")
+                 "c2","c3","e1","e2","e3","b1","b2","b3","l1","l2","l3","r1","r2","r3","k","ts","tc","tn","tx","d")
     # ---- Decomposition
     NbCodes <-length(Niveaux)
     for (i in 1:NbCodes) {
-	    Codes$Temp <- ifelse (str_detect(Codes$NoteEcolo, Niveaux[i]),Codes$Poids,0)
-	    if (sum(Codes$Temp, na.rm=T) == 0) {
-		    Codes$Temp <- NULL
-	    } else {
-		    names(Codes)[dim(Codes)[2]] <- Niveaux[i]
-	    }
-    }
-  Codes$NoteEcolo <- NULL
-  Codes$Poids <- NULL
-  Codes$Classe <- floor(Codes$Diam/5+0.5)*5
-  } else {
-        Codes <- data.frame()
+      Codes$Temp <- ifelse (str_detect(Codes$NoteEcolo, Niveaux[i]),Codes$Poids,0)
+      if (sum(Codes$Temp, na.rm=T) == 0) {
+        Codes$Temp <- NULL
+      } else {
+        names(Codes)[dim(Codes)[2]] <- Niveaux[i]
       }
+    }
+    Codes$NoteEcolo <- NULL
+    Codes$Poids <- NULL
+    Codes$Classe <- floor(Codes$Diam/5+0.5)*5
+  } else {
+    Codes <- data.frame()
+  }
   ########### Nettoyage ################
   arbres <- subset(arbres, select=c("NumForet","NumPlac","NumArbre","Cycle","Strate",
                                     "IdArbre","Azimut","Dist","Observation",
                                     "Essence","Qual","Type","Reg1", "Reg2","Haut","Stade","Limite",
                                     "Diam1","Diam2","Diam","Classe","Cat","NoteEcolo","Vitalité","PU",
-                                    "Poids","Gha","Vha","VcHa","VpHa","Gain","AcctV","Taux","TauxPU","TauxV","AccD"))
+                                    "Poids","Gha","Vha","VhaIFN","VcHa","VpHa","Gain","AcctV","Taux","TauxPU","TauxV","AccD"))
   save(TauxR,arbres,Reges,Taillis,Reperes,BMSLineaires,BMSsup30,BMP,Codes,
        file="Tables/gfTablesBrutes.RData")
 }
